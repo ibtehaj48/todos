@@ -23,6 +23,8 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp',(err,db) => {
 		console.log('unable to fetch todos', err);
 	});
 */
+
+/*
 	db.collection('Users')
 	.find({user : 'abul'})
 	.count()
@@ -33,6 +35,9 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp',(err,db) => {
 		console.log('unable to fetch todos', err);
 	});
 
+*/
+
+/*
 	db.collection('Users')
 	.find({user : 'abul'})
 	.toArray()
@@ -42,6 +47,41 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp',(err,db) => {
 	},(err) => {
 		console.log('unable to fetch todos', err);
 	})
+
+*/
+
+//**********************DELETE**************
+//delete many
+
+/*	db.collection('Todos').deleteOne({text : 'task to do'})
+	.then((result) => {
+		console.log(JSON.stringify(result,undefined,2));
+	});
+*/
+	//findOne and delete
+/*	db.collection('Todos').findOneAndDelete({completed : false})
+	.then((result) => {
+
+		console.log(result);	
+	});
+*/
+
+//delete multiple entries
+/*
+	db.collection('Users').deleteMany({user : 'abul'})
+	.then((result)=> {
+		console.log(JSON.stringify(result,undefined,2));
+	});
+*/
+
+//delete one with id
+	db.collection('Users').findOneAndDelete({
+		_id : new ObjectID('5a0596877400ef11ae2612e7')
+	})
+	.then((result)=> {
+		console.log(result);
+	});
 	//db.close();
+	
 
 });
