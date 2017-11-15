@@ -60,7 +60,7 @@ app.get('/todos/:id', (req,res) => {
 
 		//if ID not found
 		if(!todos) {
-			return res.send('ID not Found');
+			return res.send({text : 'ID not Found'});
 		} else {
 			res.send({todos});
 		};

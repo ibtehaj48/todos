@@ -3,11 +3,13 @@ const request = require('supertest');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
-
+const {ObjectID} = require('mongodb');
 
 const todos = [{
+	_id : new ObjectID(),
 	text : 'buy eggs'
 },{
+	_id : new ObjectID(),
 	text : 'buya rode NT1a'
 }];
 
@@ -31,7 +33,7 @@ beforeEach((done) => {
 // 	.then(() => done())
 // });
 
-//creating a describe block
+//creating a describe block POST
 describe('POST/todos',() => {
 
 	//should create a new todo CASE
@@ -101,7 +103,7 @@ describe('POST/todos',() => {
 
 });
 
-
+//test Get todos
 describe('GET /todos', () => {
 	it('should get all the todos', (done) => {
 
@@ -115,3 +117,49 @@ describe('GET /todos', () => {
 
 	});
 });
+
+//Test GET
+describe('GET/todos/:id', () => {
+	it('should return todo doc', (done) => {
+
+		request(app)
+		.get(`/todos/${todos[0]._id.toHexString()}`)
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.todos.text).toBe(todos[0].text);
+		})
+		.end(done);
+
+	});
+
+	it('should return a 200 and \'ID not found\'', (done) => {
+
+		//REAL Id but not in DB
+		var _idf = new ObjectID();
+
+		request(app)
+		.get(`/todos/${_idf.toHexString()}`)
+		.expect(200)
+		.expect((res) => {
+			// console.log('\n\n\n Not found in DB BODY :\n\n');
+			// console.log(res.body.text);
+			expect(res.body.text).toBe('ID not Found');
+		})
+		.end(done);
+
+		
+
+	});
+
+	it('should return a 404 for INVALID ID', (done) => {
+
+		//Invalid ID
+		request(app)
+		.get(`/todos/123`)
+		.expect(404)
+		.end(done);
+
+	});
+
+
+})
