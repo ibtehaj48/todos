@@ -11,3 +11,8 @@ expect
 mocha 
 nodemon 
 supertest
+
+5a0c3f28fcdc9fa50b7af851
+
+
+mongodb://heroku_nzp048qr:ggsbu1lft5jng4bverbf4h9s6u@ds163705.mlab.com:63705/heroku_nzp048qr
