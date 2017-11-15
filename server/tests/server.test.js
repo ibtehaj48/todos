@@ -5,14 +5,31 @@ const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 
 
+const todos = [{
+	text : 'buy eggs'
+},{
+	text : 'buya rode NT1a'
+}];
+
+//beforeEach V2 -add seed data
+beforeEach((done) => {
+	Todo.remove({})
+	.then(() => {
+		return Todo.insertMany(todos);
+	})
+	.then(() => done());
+});
+
+
 //later in the test we assume that the DB was empty and has only one item after adding
 //we use beforeEach (like annotation) to wipe off the database clean 
 //so the assumptuion above is valid
 //We use remove({}) basically which means that delete anything having a NULL set i.e. ALL data
-beforeEach((done) => {
-	Todo.remove({})
-	.then(() => done())
-});
+//beforeEach V1
+// beforeEach((done) => {
+// 	Todo.remove({})
+// 	.then(() => done())
+// });
 
 //creating a describe block
 describe('POST/todos',() => {
@@ -40,7 +57,8 @@ describe('POST/todos',() => {
 			}
 
 			//if no error we just call the todo.find() to verify and attach a THEN with it.
-			Todo.find().then((todos) => {
+			//Todo.find().then((todos) => { ||V2 to only find the record with test TEXT
+			Todo.find({text}).then((todos) => {
 				//expect the length of the todos to be 1 since only one item
 				expect(todos.length).toBe(1); 	
 				//expect the text of first document to be the one we sent
@@ -70,7 +88,8 @@ describe('POST/todos',() => {
 
 			//finding a todos and expect length to be 0
 			Todo.find().then((todos) => {
-				expect(todos.length).toBe(0);
+				// expect(todos.length).toBe(0); modified to 2 for seed data
+				expect(todos.length).toBe(2);
 				console.log('todos is empty');
 				done();
 			})
@@ -82,3 +101,17 @@ describe('POST/todos',() => {
 
 });
 
+
+describe('GET /todos', () => {
+	it('should get all the todos', (done) => {
+
+		request(app)
+		.get('/todos')
+		.expect(200)
+		.expect((res) => {
+			expect(res.body.todos.length).toBe(2);
+		})
+		.end(done);
+
+	});
+});
