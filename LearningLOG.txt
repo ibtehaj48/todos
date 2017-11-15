@@ -1,3 +1,13 @@
 ./mongod --dbpath ~/..... [start the mongo server with specified db path]
 ./mongo [start mongo terminal]
 
+
+**ES6 Destructuring object
+-----------------------------------------------------------------------------------
+after lecture 73 going for the testing of the moduel
+----------------------------------------------------------------------------------- 
+install testing dependencies :
+expect 
+mocha 
+nodemon 
+supertest
