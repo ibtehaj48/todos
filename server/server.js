@@ -1,6 +1,7 @@
 //Require Express and Body Parser
 var express = require('express');
 var bodyParser = require('body-parser');
+var _ = require('lodash');
 
 //Require the local modules and 
 var {mongoose} = require('./db/mongoose');
@@ -99,9 +100,56 @@ app.delete('/todos/:id',(req,res) => {
 });
 
 
+
+app.patch('/todos/:id', (req,res) => {
+
+	console.log('patch request');
+
+	var id = req.params.id;
+	//pick takes a body and picks out properties if they exist
+	var body = _.pick(req.body, ['text','completed']);
+
+	//validate the ID
+	if(!ObjectID.isValid(id)) {
+		return res.status(404).send();
+	}
+
+	//checkif COMPLETED is boolean and set to true
+	if (_.isBoolean(body.completed) && body.completed) {
+
+		body.completedAt = new Date().getTime();	//JS timestamp
+
+	} else {
+
+		body.completed = false;
+		body.completedAt = null;
+	}
+
+	//query to DB and update - FindByIdAndUpdate()
+	Todo.findByIdAndUpdate(id, {
+		$set : body
+	}, {
+		new : true
+	})
+	.then((todo) => {
+		if (!todo) {
+			res.status(404).send({text : 'ID not found'});
+		}
+
+		res.send({todo});
+
+	})
+	.catch((e) => {
+		res.status(400).send();
+	});
+
+});
+
+
 //App starts listening
 app.listen(PORT, () => {
 	console.log(`Starting the App.. ${PORT}`);
-})
+});
+
 
 module.exports = {app};
