@@ -16,3 +16,24 @@ supertest
 
 
 mongodb://heroku_nzp048qr:ggsbu1lft5jng4bverbf4h9s6u@ds163705.mlab.com:63705/heroku_nzp048qr
+
+
+---
+START OF USER AUTHENTICATION AN SECURITY
+
+
+88. use validators and have route for creating new user with emailand password. new db required and old db must be deleted
+
+89. use new library
+crypto-js
+SHA 256 is used to hash the message
+
+
+90. 
+
+MODEL methods - User - find by token - - donot apply to individual document
+
+
+INSTANCE methods - user - generateAuthToken
+
+tweak on the User Model

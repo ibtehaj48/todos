@@ -8,6 +8,8 @@ var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 var {ObjectID} = require('mongodb');
+var {authenticate} = require('./middleware/authenticate');
+
 
 var app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,9 +35,7 @@ app.post('/todos',(req,res) => {
 	}, (e) => {
 		res.status(400).send(e);
 	});
-
 });
-
 //route for GET todos
 app.get('/todos', (req,res) => {
 
@@ -44,9 +44,7 @@ app.get('/todos', (req,res) => {
 	}, (e) => {
 		res.status(400).send(e);
 	});
-
 });
-
 //route for GET /todos/:id
 app.get('/todos/:id', (req,res) => {
 
@@ -70,10 +68,7 @@ app.get('/todos/:id', (req,res) => {
 	}, (e) => {
 		res.status(400).send(e);
 	});
-
 });
-
-
 //delete request
 app.delete('/todos/:id',(req,res) => {
 
@@ -96,11 +91,8 @@ app.delete('/todos/:id',(req,res) => {
 	}, (e) => {
 		res.status(400).send(e);
 	});
-
 });
-
-
-
+//
 app.patch('/todos/:id', (req,res) => {
 
 	console.log('patch request');
@@ -120,6 +112,8 @@ app.patch('/todos/:id', (req,res) => {
 		body.completedAt = new Date().getTime();	//JS timestamp
 
 	} else {
+
+		//when completed is false it also clears th etime completed at
 
 		body.completed = false;
 		body.completedAt = null;
@@ -142,10 +136,29 @@ app.patch('/todos/:id', (req,res) => {
 	.catch((e) => {
 		res.status(400).send();
 	});
+});
+//create user
+app.post('/users',(req,res) => {
 
+	var body = _.pick(req.body, ['email','password']);
+	var user = new User(body);
+
+	//the newUser record is saved
+	//when succesful it calls the THEN which will generate an auth token
+	user.save().then(() => {
+		return user.generateAuthToken();
+		//res.send(user);
+	}).then((token) => {
+		res.header('x-auth', token).send(user);
+	})
+	.catch((e) => res.status(400).send(e));
 });
 
 
+
+app.get('/users/me', authenticate, (req,res) => {
+	res.send(req.user);
+});
 //App starts listening
 app.listen(PORT, () => {
 	console.log(`Starting the App.. ${PORT}`);

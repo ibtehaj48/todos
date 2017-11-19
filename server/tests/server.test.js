@@ -10,7 +10,9 @@ const todos = [{
 	text : 'buy eggs'
 },{
 	_id : new ObjectID(),
-	text : 'buya rode NT1a'
+	text : 'buya rode NT1a',
+	completed : true,
+	completedAt : 1000
 }];
 
 //beforeEach V2 -add seed data
@@ -186,10 +188,10 @@ describe('DELETE /todos', () => {
 
 			Todo.findById(id)
 			.then((todo) => {
-				expect(todo).toNotExist();
+				expect(todo).toBeFalsy();
 				done();
 			})
-			.catch((e) => done(e))
+			.catch((e) => done(e));
 
 
 		});
@@ -203,7 +205,7 @@ describe('DELETE /todos', () => {
 		request(app)
 		.delete(`/todos/${id}`)
 		.expect(200)
-		.expect(res => {
+		.expect((res) => {
 			expect(res.body.text).toBe('ID not Found');
 		})
 		.end(done);
@@ -222,4 +224,52 @@ describe('DELETE /todos', () => {
 
 	});
 
+});
+
+
+
+//Testing the UPDATE with PATCH route
+describe('PATCH /todos/:id', () => {
+
+	it('should update the todo', (done) => {
+		var id = todos[0]._id.toHexString();
+		var text = 'updated text';
+
+		request(app)
+		.patch(`/todos/${id}`)
+		.send({
+			text,
+			completed : true
+		})
+		.expect(200)
+		.expect((res) => {
+			console.log(res.body);
+			expect(res.body.todo.text).toBe(text);
+			expect(res.body.todo.completed).toBe(true);
+			expect(typeof(res.body.todo.completedAt)).toBe('number');
+		})
+		.end(done);
+	});
+
+	//toggle 
+	it('should clear copletedAt when todo is not commpleted', (done) => {
+
+		var id = todos[1]._id.toHexString();
+		var text = 'updated new text';
+
+		request(app)
+		.patch(`/todos/${id}`)
+		.send({
+			text,
+			completed : false
+		})
+		.expect(200)
+		.expect((res) => {
+			console.log(res.body);
+			expect(res.body.todo.text).toBe(text);
+			expect(res.body.todo.completed).toBe(false);
+			expect(res.body.todo.completedAt).toBeFalsy();
+		})
+		.end(done);
+	});
 });
